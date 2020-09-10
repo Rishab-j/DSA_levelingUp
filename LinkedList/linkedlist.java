@@ -82,7 +82,7 @@ public class linkedlist{
             Node curr = prev.next;
 
             prev.next = node;
-            curr.next = node;
+            node.next = curr;
 
             this.elementCount++;
         }
@@ -104,7 +104,7 @@ public class linkedlist{
             this.head = null;
             this.tail = null;
         }else{
-            this.head = this.head.next;
+            this.head = this.head.next; 
             node.next = null;
         }
 
