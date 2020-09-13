@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <queue>
 using namespace std;
 
 struct ListNode
@@ -67,6 +69,30 @@ ListNode *reverseList(ListNode *head)
     }
 
     return prev;
+}
+
+//Leetcode 206
+ListNode *reverseList(ListNode *head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return head;
+
+    ListNode *prev = nullptr;
+    ListNode *forw = nullptr;
+    ListNode *curr = head;
+
+    while (curr != nullptr)
+    {
+        forw = curr->next; // backup
+
+        curr->next = prev; // link
+
+        prev = curr; // move
+        curr = forw;
+    }
+
+    head=prev;
+    return head;
 }
 
 void reveseData(ListNode *head)
@@ -253,3 +279,184 @@ ListNode *mergeTwoLists(ListNode *l1, ListNode *l2)
 
     return dummy->next;
 }
+
+//Leetcode 148
+ListNode *sortList(ListNode *head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return head;
+
+    ListNode *mid = middleNode2(head);
+    ListNode *nhead = mid->next;
+    mid->next = nullptr;
+
+    return mergeTwoLists(sortList(head), sortList(nhead));
+}
+
+//Leetcode 23
+ListNode *mergeKLists(vector<ListNode *> &lists, int si, int ei)
+{
+    if (si == ei)
+        return lists[si];
+
+    int mid = (si + ei) / 2;
+    return mergeTwoLists(mergeKLists(lists, si, mid), mergeKLists(lists, mid + 1, ei));
+}
+
+ListNode *mergeKLists(vector<ListNode *> &lists)
+{
+    if (lists.size() == 0)
+        return nullptr;
+    return mergeKLists(lists, 0, lists.size() - 1);
+}
+
+class compare
+{
+public:
+    bool operator()(const ListNode *a, const ListNode *b) const
+    {
+        return a->val > b->val; // this- other , default.
+    }
+};
+
+ListNode *mergeKLists(vector<ListNode *> &lists)
+{
+    if (lists.size() == 0)
+        return nullptr;
+
+    // PriorityQueue<ListNode> pq = new PriorityQueue<>((a,b)->{
+    //     return a.val - b.val;
+    // });
+
+    priority_queue<ListNode *, vector<ListNode *>, compare> que;
+    for (int i = 0; i < lists.size(); i++)
+        que.push(lists[i]);
+
+    ListNode *dummy = new ListNode(-1);
+    ListNode *prev = dummy;
+
+    while (que.size() != 1)
+    {
+        ListNode *node = que.top();
+        que.pop();
+
+        ListNode *next = node->next; // backup
+        node->next = nullptr;
+
+        prev->next = node; // link
+        prev = node;
+
+        if (next != nullptr)
+            que.push(next); // move
+    }
+
+    prev->next = que.top();
+    que.pop();
+
+    return dummy->next;
+}
+
+//Leetcode 25
+int len(ListNode *head)
+{
+    int l = 0;
+    while (head != nullptr)
+    {
+        l++;
+        head = head->next;
+    }
+    return l;
+}
+
+ListNode *reverseKGroup(ListNode *head, int k)
+{
+    if (head == nullptr || head->next == nullptr || k <= 1)
+        return head;
+
+    int l = len(head);
+    if (l < k)
+        return head;
+
+    ListNode *curr = head;
+
+    ListNode *oh = nullptr;
+    ListNode *ot = nullptr;
+
+    int K = k;
+    while (curr != nullptr && l >= k)
+    {
+        while (K-- > 0)
+        {
+            ListNode *next = curr->next;
+            curr->next = nullptr;
+
+            addFirst(curr);
+
+            curr = next;
+        }
+
+        if (oh == nullptr)
+        {
+            oh = th1;
+            ot = tt1;
+        }
+        else
+        {
+            ot->next = th1;
+            ot = tt1;
+        }
+
+        th1 = nullptr;
+        tt1 = nullptr;
+
+        l -= k;
+        K = k;
+    }
+
+    ot->next = curr;
+    return oh;
+}
+
+//Leetcode 92
+ListNode *reverseBetween(ListNode *head, int m, int n)
+{
+    if (head == nullptr || head->next == nullptr || m == n)
+        return head;
+
+    ListNode *curr = head;
+    ListNode *prev = nullptr;
+
+    int idx = 1;
+    while (curr != nullptr)
+    {
+        while (idx >= m && idx <= n)
+        {
+            ListNode *next = curr->next;
+            curr->next = nullptr;
+
+            addFirst(curr);
+            curr = next;
+            idx++;
+        }
+
+        if (idx > n)
+        {
+            if (prev == nullptr)
+                head = th1;
+            else
+                prev->next = th1;
+
+            tt1->next = curr;
+            break;
+        }
+
+        prev = curr;
+        curr = curr->next;
+        idx++;
+    }
+
+    return head;
+}
+
+
+
