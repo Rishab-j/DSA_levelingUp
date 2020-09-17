@@ -477,6 +477,24 @@ bool hasCycle(ListNode *head)
     return slow == fast;
 }
 
+bool hasCycle2(ListNode *head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return false;
+    ListNode *slow = head;
+    ListNode *fast = head;
+
+    while (fast->next != nullptr && fast->next->next != nullptr)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+        if (slow == fast)
+            return true;
+    }
+
+    return false;
+}
+
 //Leetcode 142
 ListNode *detectCycle(ListNode *head)
 {
