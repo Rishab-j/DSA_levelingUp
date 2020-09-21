@@ -1,7 +1,8 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-public class questions{
+public class questions {
     public class TreeNode {
         int val;
         TreeNode left;
@@ -93,4 +94,50 @@ public class questions{
         
         return Math.max(nodeToLeafLeft,nodeToLeafRight) + node.data;
     }
+
+    // Leetcode 119
+    public static class pair{
+        TreeNode node = null;
+        int val = 0;
+
+        pair(TreeNode node,int val){
+            this.node = node;
+            this.val = val;
+        }
+    }
+
+    public static List<Integer> leftView(TreeNode node){
+        LinkedList<pair> que = new LinkedList<>();
+        que.addLast(new pair(node,0));
+
+        int level = 0;
+        ArrayList<pair> ans = new ArrayList<>();
+
+        while(que.size()!=0){
+            int size = que.size();
+            while(size-- > 0){
+                pair vtx = que.removeFirst();
+                
+                if(level == ans.size()) ans.add(vtx);   
+                else if(vtx.val < ans.get(level).val) ans.set(level,vtx);
+
+                if(vtx.node.left != null) que.addLast(new pair(vtx.node.left,vtx.val - 1));
+                if(vtx.node.right != null) que.addLast(new pair(vtx.node.right,vtx.val + 1));
+            
+            }
+            level++;
+        }
+
+        ArrayList<Integer> res = new ArrayList<>();
+        for(pair p : ans){
+            res.add(p.node.val);
+        }
+
+        return res;
+    }
+
+
+
+   
+
 }
