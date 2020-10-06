@@ -10,6 +10,13 @@ public class questions {
         TreeNode(int x) { val = x; }
     }
 
+    public class Node {
+        int data;
+        TreeNode left;
+        TreeNode right;
+        Node(int x) { data = x; }
+    }
+
 
     // Leetcode 236
     public boolean nodeToRootPath(TreeNode node,int data,ArrayList<TreeNode> ans){
@@ -135,6 +142,264 @@ public class questions {
 
         return res;
     }
+
+    //Leetcode 98
+    TreeNode prev = null;
+    public boolean isValidBST(TreeNode root) {
+        if(root == null) return true;
+
+        if(!isValidBST(root.left)) return false;
+        
+        if(prev!= null && prev.val > root.val) return false;
+        prev = root;
+
+        if(!isValidBST(root.right)) return false;
+
+        return true;
+    }
+
+    public class BSTpair{
+        boolean isBST = true;
+        long min =  (long)1e18;
+        long max = -(long)1e18;
+    }
+
+    public BSTpair isValidBST_(TreeNode root) {
+        if(root == null) return new BSTpair();
+
+        BSTpair left = isValidBST_(root.left);
+        BSTpair right = isValidBST_(root.right);
+
+        BSTpair myAns = new BSTpair();
+        if(!left.isBST || !right.isBST ||  left.max >= root.val || right.min <= root.val){
+            myAns.isBST = false;
+            return myAns;
+        
+        }
+
+        myAns.min = Math.min(left.min,root.val);
+        myAns.max = Math.max(right.max,root.val); 
+
+        return myAns;
+    }
+    
+    public boolean isValidBST(TreeNode node){
+        return isValidBST_(node).isBST;
+    }
+
+    public TreeNode buildTree(int[] preorder,int psi,int pei, int[] inorder,int isi,int iei){
+        if(psi > pei) return null;
+
+        TreeNode node = new TreeNode(preorder[psi]);
+        int idx = isi;
+        while(inorder[idx]!=preorder[psi]){
+            idx++;
+        }
+
+        int count = idx - isi; // countOfNodesInLeftSubTree.
+
+        node.left = buildTree(preorder,psi+1,psi+count,inorder,isi,idx-1);
+        node.right = buildTree(preorder,psi+count+1,pei,inorder,idx+1,iei);
+
+        return node;
+    }
+
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if(preorder.length==0) return null;
+        int n = preorder.length;
+
+        return buildTree(preorder,0,n-1,inorder,0,n-1);
+    }
+
+    //106
+    public TreeNode buildTree(int[] postorder,int psi,int pei, int[] inorder,int isi,int iei) {
+        if(psi > pei) return null;
+
+        TreeNode node = new TreeNode(postorder[pei]);
+        int idx = isi;
+
+        while(inorder[idx] != postorder[pei]){
+            idx++;
+        }
+
+        int count = idx - isi;
+
+        node.left = buildTree(postorder,psi,psi + count - 1, inorder, isi,idx-1);
+        node.right = buildTree(postorder,psi + count,pei-1, inorder, idx+1,iei);
+
+        return node;
+    }
+    
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+            if(postorder.length==0) return null;
+            int n = postorder.length;
+    
+            return buildTree(postorder,0,n-1,inorder,0,n-1);
+    }
+
+    //Leetcode 889
+    public TreeNode buildTree(int[] postorder,int posi,int poei, int[] preorder,int psi,int pei) {
+        if(psi > pei) return null;
+        if(psi == pei) return new TreeNode(preorder[psi]); // leaf node
+
+        TreeNode node = new TreeNode(preorder[psi]);
+        int idx = posi;
+
+        while(postorder[idx] != preorder[psi + 1]){
+            idx++;
+        }
+
+        int count = idx - posi + 1;
+
+        node.left = buildTree(postorder,posi,posi + count - 1, preorder, psi+1,psi + count);
+        node.right = buildTree(postorder,posi + count,poei-1, preorder,psi + count + 1, pei);
+
+        return node;
+    }
+
+    public TreeNode constructFromPrePost(int[] pre, int[] post) {
+        if(post.length==0) return null;
+        int n = post.length;
+
+        return buildTree(post,0,n-1,pre,0,n-1);        
+    }
+
+    // 968
+    
+    
+    // -1 i am covered by a camera .
+    // 0 i am a camera.
+    // 1 means i need a camera.
+
+    int camera=0;
+    public int minCameraCover(TreeNode root) {
+        if(minCameraCover_(root) == 1) camera++;
+        return camera;
+    }
+    
+    public int minCameraCover_(TreeNode root){
+        if(root==null) return  -1;
+        
+        int lres = minCameraCover_(root.left);
+        int rres = minCameraCover_(root.right);
+
+        if(lres == 1 || rres == 1){
+            camera++;
+            return 0;
+        }
+
+        if(lres == 0 || rres == 0){
+            return -1;
+        }
+
+        return 1;
+    }
+    
+}
+
+//https://practice.geeksforgeeks.org/problems/binary-tree-to-dll/1
+
+Node prevDLL = null;
+Node headDLL = null;
+
+void bToDLL_(Node node){
+    if(node==null) return;
+
+    bToDLL_(node.left);
+    
+    if(prevDLL==null) headDLL = node;
+    else{
+        prevDLL.right = node;
+        node.left = prevDLL;
+    }
+
+    prevDLL = node;
+
+    bToDLL_(node.right);
+}
+
+Node bToDLL(Node root)
+{
+    bToDLL_(root);
+    return headDLL;
+}
+
+// https://practice.geeksforgeeks.org/problems/binary-tree-to-cdll/1
+public Node bTreeToClist(Node root){
+    bToDLL_(root);
+
+    prevDLL.right = headDLL;
+    headDLL.left = prevDLL;
+    
+    return head;
+}
+
+//230
+public TreeNode rightMostNode(TreeNode node,TreeNode curr){
+    while(node.right != null && node.right != curr ){
+        node = node.right;
+    }
+    return node;
+}
+
+public int kthSmallest(TreeNode node, int k) {
+    TreeNode curr = node;
+    while(curr!=null){
+        TreeNode leftNode = curr.left;
+        if(leftNode == null){  // left null
+            if(--k == 0) break;
+            curr = curr.right;
+        }else{
+            TreeNode rmost = rightMostNode(leftNode,curr);
+            if(rmost.right == null){ // thread Creation
+                rmost.right = curr;
+                curr = curr.left;
+            }else{  // thread Break
+                rmost.right = null;
+                if(--k == 0) break;
+                
+                curr = curr.right;
+            }
+        }
+    }
+    return curr.val;
+}
+
+// https://www.geeksforgeeks.org/check-if-given-preorder-inorder-and-postorder-traversals-are-of-same-tree/
+int idx = 0;
+public boolean checkTree(int[] preorder,int psi,int pei, int[] inorder,int isi,int iei,int[] post){
+    if(psi > pei) return true;
+
+    int idx = isi;
+    boolean flag = false;
+    while(idx < iei){
+        if(inorder[idx] == preorder[psi]){
+            flag = true;
+            break;
+        }
+        idx++;
+    }
+
+    if(!flag) return false; 
+
+    int count = idx - isi; // countOfNodesInLeftSubTree.
+
+    if(!checkTree(preorder,psi+1,psi+count,inorder,isi,idx-1,post)) return  false;
+    if(!checkTree(preorder,psi+count+1,pei,inorder,idx+1,iei,post)) return  false;
+    
+    if(preorder[psi] != post[idx++]) return false;
+    
+    return true;
+}
+
+
+public TreeNode checkTree(int[] preorder, int[] inorder,int[] post) {
+    if(preorder.length==0) return null;
+    int n = preorder.length;
+
+    return checkTree(preorder,0,n-1,inorder,0,n-1,post);
+}
 
 
 

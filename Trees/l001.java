@@ -191,6 +191,8 @@ public class l001 {
         return -1;
     }
 
+    // gfg : Burning BT
+
     public static void kFar2(Node node, int data, int k) {
 
     }
@@ -279,7 +281,7 @@ public class l001 {
         int level = 0;
         while(que.size()!=0){
             int size = que.size();
-            System.out.print("Level : " + level + " -> ")
+            System.out.print("Level : " + level + " -> ");
             while(size-- > 0){
                 Node vtx = que.removeFirst();
                 System.out.print(vtx.data + " ");
@@ -314,7 +316,7 @@ public class l001 {
         }
     }
 
-    public static List<Integer> leftView(Node node) {
+    public static List<pair> leftView(Node node) {
         LinkedList<pair> que = new LinkedList<>();
         que.addLast(new pair(node, 0));
 
@@ -341,6 +343,7 @@ public class l001 {
             System.out.println();
             level++;
         }
+        return ans;
     }
 
     public static List<Integer> leftViewInterview(Node node) {
@@ -406,7 +409,7 @@ public class l001 {
             while(size-->0){
                 pair vtx = que.removeFirst();
 
-                ans[vtx.val].add(ans.node.data);
+                ans[vtx.val].add(vtx.node.data);
                 if(vtx.node.left!=null) que.addLast(new pair(vtx.node.left,vtx.val - 1));
                 if(vtx.node.right!=null) que.addLast(new pair(vtx.node.right,vtx.val + 1));
             }
@@ -428,7 +431,7 @@ public class l001 {
             while(size-->0){
                 pair vtx = que.removeFirst();
 
-                ans[vtx.val]+=ans.node.data;
+                ans[vtx.val]+=vtx.node.data;
 
                 if(vtx.node.left!=null) que.addLast(new pair(vtx.node.left,vtx.val - 1));
                 if(vtx.node.right!=null) que.addLast(new pair(vtx.node.right,vtx.val + 1));
@@ -436,7 +439,7 @@ public class l001 {
         }
     }
 
-    public static void bottomSum(Node node){
+    public static void bottomView(Node node){
         int[] maxMin = new int[2];
         width(node,0,maxMin);
 
@@ -451,7 +454,7 @@ public class l001 {
             while(size-->0){
                 pair vtx = que.removeFirst();
 
-                ans[vtx.val] = ans.node.data;
+                ans[vtx.val] = vtx.node.data;
                 
                 if(vtx.node.left!=null) que.addLast(new pair(vtx.node.left,vtx.val - 1));
                 if(vtx.node.right!=null) que.addLast(new pair(vtx.node.right,vtx.val + 1));
@@ -459,14 +462,14 @@ public class l001 {
         }
     }
 
-    public static void topSum(Node node){
+    public static void topView(Node node){
         int[] maxMin = new int[2];
         width(node,0,maxMin);
 
         int n = maxMin[0] - maxMin[1] + 1;
         Integer[] ans = new Integer[n];
         
-        LinkedList<pair> que = new LinkedList;
+        LinkedList<pair> que = new LinkedList<>();
         que.addLast(new pair(node,-maxMin[1]));
 
         while(que.size()!=0){
@@ -475,7 +478,7 @@ public class l001 {
                 pair vtx = que.removeFirst();
  
                 if(ans[vtx.val]==null)
-                   ans[vtx.val] = ans.node.val;
+                   ans[vtx.val] = vtx.node.data;
                 
                 if(vtx.node.left!=null) que.addLast(new pair(vtx.node.left,vtx.val - 1));
                 if(vtx.node.right!=null) que.addLast(new pair(vtx.node.right,vtx.val + 1));
@@ -483,19 +486,167 @@ public class l001 {
         }
     }
 
+    public static void widthDiagonal(Node node, int level, int[] res) {
+        if (node == null)
+            return;
+
+        res[0] = Math.min(level, res[0]);
+        widthDiagonal(node.left, level - 1, res);
+        widthDiagonal(node.right, level, res);
+    }
+
+    public static void DiagonalView(Node node, int level, ArrayList<Integer>[] ans) {
+        if (node == null)
+            return;
+
+        ans[level].add(node.data);
+
+        DiagonalView(node.left, level - 1, ans);
+        DiagonalView(node.right, level, ans);
+    }
+
+    public static void DiagonalView(Node node) {
+        int[] res = new int[1];
+        widthDiagonal(node, 0, res);
+
+        ArrayList<Integer>[] ans = new ArrayList[0 - res[0] + 1]; // vector<vector<int>> ans(0 - res[0] +
+                                                                  // 1,vector<int>());
+        for (int i = 0; i < ans.length; i++)
+            ans[i] = new ArrayList<>();
+
+        DiagonalView(node, -res[0], ans);
+    }
+
     public static void ViewSet(Node node) {
 
     }
 
-    public static void solve() {
-        int[] arr = { 10, 20, 40, -1, -1, 50, 80, -1, -1, 90, -1, -1, 30, 60, 100, -1, -1, -1, 70, 110, -1, -1, 120, -1,
-                -1 };
+
+
+    // set 2.=============================================================
+
+
+
+public static class allSolPair{
+        Node prev = null;
+        Node pred = null;
+        Node succ = null;
+
+        int ceil = (int) 1e9;
+        int floor = -(int) 1e9;
+    }
+
+    public static void allSolution(Node node,int data,allSolPair ans){
+        if(node == null) return;
+
+        if(node.data > data) ans.ceil = Math.min(ans.ceil,node.data);
+        if(node.data < data) ans.floor = Math.max(ans.floor,node.data);
+
+        allSolution(node.left,data,ans);
+        
+        if(node.data == data)
+            ans.pred = ans.prev;
+        if(ans.prev != null && ans.prev.data == data) ans.succ = node;
+        ans.prev = node;
+        
+        allSolution(node.right,data,ans);
+    }
+
+    public static Node rightMostNode(Node node,Node curr){
+        while(node.right != null && node.right != curr ){
+            node = node.right;
+        }
+        return node;
+    }
+
+    public static void morrisInTraversal(Node node){
+        Node curr = node;
+        while(curr!=null){
+            Node leftNode = curr.left;
+            if(leftNode == null){  // left null
+                System.out.print(curr.data);
+                curr = curr.right;
+            }else{
+                Node rmost = rightMostNode(leftNode,curr);
+                if(rmost.right == null){ // thread Creation
+                    rmost.right = curr;
+                    curr = curr.left;
+                }else{  // thread Break
+                    rmost.right = null;
+                    System.out.print(curr.data);
+                    curr = curr.right;
+                }
+            }
+        }
+    }
+
+    
+    public static void morrisPreTraversal(Node node){
+        Node curr = node;
+        while(curr!=null){
+            Node leftNode = curr.left;
+            if(leftNode == null){  // left null
+                System.out.print(curr.data);
+                curr = curr.right;
+            }else{
+                Node rmost = rightMostNode(leftNode,curr);
+                if(rmost.right == null){ // thread Creation
+                    System.out.print(curr.data);
+                    
+                    rmost.right = curr;
+                    curr = curr.left;
+                }else{  // thread Break
+                    
+                    rmost.right = null;
+                    curr = curr.right;
+                }
+            }
+        }
+    }
+
+    public static class tPair{
+        Node node = null;
+        boolean selfdone=false;
+        boolean leftdone=false;
+        boolean rightdone=false;
+
+        tPair(Node node,boolean selfdone,boolean leftdone,boolean right){
+            this.selfdone = selfdone;
+            this.leftdone = leftdone;
+            this.right = rightdone;
+        }
+    }
+
+    public static void IterTraversal(Node node){
+
+        Stack<tPair> st = new Stack<>();
+        st.push(new tPair(node,false,false,false));
+
+        while(st.size()!=0){
+            tPair rp = st.peek();
+            
+            if(!rp.selfdone){
+                rp.selfdone = true;
+                System.out.print(rp.node.data + " ");
+            }else if(!rp.leftdone){
+                rp.leftdone = true;
+                if(rp.node.left != null) st.push(new tPair(rp.node.left,false,false,false));
+            }else if(!rp.rightdone){
+                rp.rightdone = true;
+                if(rp.node.right != null) st.push(new tPair(rp.node.right,false,false,false));
+            }else{
+                st.pop();
+            }
+        }
+    }
+
+    public static void solve(){
+        int[] arr={10,20,40,-1,-1,50,80,-1,-1,90,-1,-1,30,60,100,-1,-1,-1,70,110,-1,-1,120,-1,-1};
         Node root = constructTree(arr);
         display(root);
     }
 
-    public static void main(String... args) {
+    public static void main(String[] args){
         solve();
-    }
-
+    } 
 }
