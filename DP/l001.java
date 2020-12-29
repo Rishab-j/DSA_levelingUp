@@ -557,6 +557,7 @@ public class l001 {
                 
                 if (i == j) {
                     dp[i][j] = 1;
+                    sdp[i][j] = sdp[i][j] + str.charAt(i);
                     continue;
                 }
 
@@ -573,8 +574,15 @@ public class l001 {
                 }
 
             }
-        }
 
+        }
+        
+        for(int k = 0; k<sdp.length;k++){
+            for(int m = 0; m<sdp.length ; m++ ){
+                System.out.print(sdp[k][m] + " ");
+            }
+            System.out.println();
+        }
         System.out.println(sdp[0][n - 1] + " @ " + dp[0][n - 1]);
         return dp[0][n - 1];
     }
@@ -1258,20 +1266,20 @@ public class l001 {
     }
 
     public static void String_set() {
-        // String str = "effbccbade";
-        // int n = str.length();
-        // int[][] dp = new int[n][n];
+        String str = "efbade";
+        int n = str.length();
+        int[][] dp = new int[n][n];
 
         // longestPalindromeSubstring("effbccbad");
         // System.out.println(longestPlaindromeSubsequence(str, 0, n - 1, dp));
-        // System.out.println(longestPlaindromeSubsequence_DP(str, 0, n - 1, dp));
+        System.out.println(longestPlaindromeSubsequence_DP(str, 0, n - 1, dp));
 
         // pair[][] dp = new pair[n][n];
         // pair ans = longestPlaindromeSubsequence_02(str, 0, n - 1, dp);
         // System.out.println(ans.str + "@" + ans.len);
 
         // longestCommonSubsequence("AGGTAB", "GXTXAYB");
-        countPalindromicSubsequence("baccbab");
+        // countPalindromicSubsequence("baccbab");
 
         // display2D(dp);
     }
@@ -1315,8 +1323,8 @@ public class l001 {
     public static void solve() {
         // set1();
         // pathSet();
-        // String_set();
-        targetSet();
+        String_set();
+        // targetSet();
     }
 
     public static void main(String... args) {
