@@ -215,19 +215,36 @@ void KthSmallest(int src, int dest, int k)
     }
 }
 
-int KthSmallest02_(int src, int dest, int floor, vector<bool> &vis)
+int KthSmallest02_(int src, int dest,int weight, int floor, vector<bool> &vis)
 {
-    return -1;
+    if (src == dest)
+    {
+        return weight;
+    }
+
+    vis[src] = true;
+    int smallest = 1e8;
+    for (Edge e : graph[src])
+        if (!vis[e.v]){
+            int recAns = KthSmallest02_(e.v, dest, weight + e.w, floor, vis);
+            if(recAns > floor) {
+                smallest = min(smallest,recAns);
+            }
+        }
+
+    vis[src] = false;
+
+    return smallest;
 }
 
 void KthSmallest02(int src, int dest, int k)
 {
     int floor = -1e8;
     vector<bool> vis(N, false);
-    int ans = 1e8;
+    int ans = -1e8;
     while (k-- > 0)
     {
-        ans = KthSmallest02_(src, dest, floor, vis);
+        ans = KthSmallest02_(src, dest,0, floor, vis);
         floor = ans;
     }
     cout << ans << endl;
@@ -235,7 +252,7 @@ void KthSmallest02(int src, int dest, int k)
 
 int hamintoninPath(int src, int osrc, int noEdge, vector<bool> &vis, string path)
 {
-    if (noEdge == N - 1)
+    if (noEdge == N - 1)  // N-1 because here we are talking about edges not vertices
     {
         int idx = searchVrtx(src, osrc);
         path += to_string(src);
@@ -588,7 +605,7 @@ void constructGraph()
 
 void solve()
 {
-    // constructGraph();
+    constructGraph();
     // removeVtx(3);
     // display();
 
@@ -601,10 +618,12 @@ void solve()
     // pathPair p = smallestPath(0, 6, vis);
     // cout << p.path << " @ " << p.len << endl;
 
+    KthSmallest02(0,6,2);
+
     // cout << hamintoninPath(0, 0, 0, vis, "") << endl;
     // BFS();
 
-    constructDirectedGraph();
+    //constructDirectedGraph();
 }
 
 int main()
